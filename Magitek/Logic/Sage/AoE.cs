@@ -1,4 +1,4 @@
-﻿using ff14bot;
+using ff14bot;
 using Magitek.Extensions;
 using Magitek.Models.Sage;
 using Magitek.Utilities;
@@ -22,10 +22,10 @@ namespace Magitek.Logic.Sage
             if (Core.Me.CurrentTarget == null)
                 return false;
 
-            if (Combat.Enemies.Count(r => r.Distance(Core.Me.CurrentTarget) <= Spells.Phlegma.Radius + 5) < SageSettings.Instance.AoEEnemies)
+            if (Spells.Phlegma.Charges == 0)
                 return false;
 
-            if (Spells.Phlegma.Charges == 0)
+            if (Combat.Enemies.Count(i => i.Distance2D(Core.Me.CurrentTarget) < i.CombatReach + Spells.Phlegma.Radius) < SageSettings.Instance.AoEEnemies)
                 return false;
 
             return await Spells.Phlegma.Cast(Core.Me.CurrentTarget);
@@ -46,7 +46,7 @@ namespace Magitek.Logic.Sage
                 && Core.Me.ClassLevel >= Spells.Toxikon.LevelAcquired)
                 return false;
 
-            if (Combat.Enemies.Count(r => r.Distance(Core.Me) <= Spells.Dyskrasia.Radius + 5) < SageSettings.Instance.AoEEnemies)
+            if (Combat.Enemies.Count(i => i.Distance2D(Core.Me) < i.CombatReach + Spells.Dyskrasia.Radius) < SageSettings.Instance.AoEEnemies)
                 return false;
 
             return await Spells.Dyskrasia.Cast(Core.Me.CurrentTarget);
@@ -63,10 +63,10 @@ namespace Magitek.Logic.Sage
             if (Core.Me.CurrentTarget == null)
                 return false;
 
-            if (Combat.Enemies.Count(r => r.Distance(Core.Me.CurrentTarget) <= Spells.Toxikon.Radius + 5) < SageSettings.Instance.AoEEnemies)
-                return false;
-
             if (Addersting == 0)
+                return false;
+            
+            if (Combat.Enemies.Count(i => i.Distance2D(Core.Me.CurrentTarget) < i.CombatReach + Spells.Toxikon.Radius) < SageSettings.Instance.AoEEnemies)
                 return false;
 
             return await Spells.Toxikon.Cast(Core.Me.CurrentTarget);
@@ -88,10 +88,10 @@ namespace Magitek.Logic.Sage
             if (Core.Me.CurrentTarget == null)
                 return false;
 
-            if (Combat.Enemies.Count(r => r.Distance(Core.Me.CurrentTarget) <= Spells.Pneuma.Radius) < SageSettings.Instance.AoEEnemies)
+            if (Spells.Pneuma.Cooldown != TimeSpan.Zero)
                 return false;
 
-            if (Spells.Pneuma.Cooldown != TimeSpan.Zero)
+            if (Combat.Enemies.Count(r => r.Distance(Core.Me.CurrentTarget) <= Spells.Pneuma.Radius) < SageSettings.Instance.AoEEnemies)
                 return false;
 
             return await Spells.Pneuma.Cast(Core.Me.CurrentTarget);
